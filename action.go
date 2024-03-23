@@ -90,7 +90,7 @@ var (
 							CC:  `aarch64-linux-gnu-gcc`,
 							CXX: `aarch64-linux-gnu-cpp`,
 							Vers: list_vers{
-								`_`: {
+								``: {
 									Tags: `go_json`,
 								},
 							},
@@ -126,7 +126,7 @@ var (
 				// },
 			},
 		},
-		`go1.20.14`: {
+		`/home/runner/go/bin/go1.20.14`: {
 			Args: def_args,
 			GoOS: list_goos{
 				`windows`: {
@@ -224,29 +224,26 @@ func build(p *param) (err error) {
 	b.WriteByte('-')         // lx-source-linux-
 	b.WriteString(p.GoArch)  // lx-source-linux-amd64
 	b.WriteString(p.GoIns)   // lx-source-linux-amd64v2
+	if p.GoVer != `go` {
+		b.WriteString(`-go1.20`) // lx-source-linux-amd64v2-go1.20
+	}
 	// 拼接输出名称
 	oname := args_path + b.String() // dist/lx-source-linux-amd64v2
 	if p.GoOS == `windows` {
 		oname += `.exe` // dist/lx-source-linux-amd64v2.exe
 	}
-	fmt.Println(`开始编译:`, oname)
+	fmt.Println(`开始编译:`, oname, `, Param:`, *p)
 	// 填入参数并构建
-	var c strings.Builder
-	c.WriteString(p.GoVer)
-	c.WriteString(` build -o `)
-	c.WriteString(oname)
-	c.WriteString(` -asmflags=-trimpath="`)
-	c.WriteString(workDir)
-	c.WriteString(`"`)
-	c.WriteString(` -gcflags=-trimpath="`)
-	c.WriteString(workDir)
-	c.WriteString(`"`)
-	c.WriteString(` -tags "`)
-	c.WriteString(p.Tag)
-	c.WriteString(`"`)
-	c.WriteString(` -trimpath -buildvcs=false -ldflags "-s -w -linkmode external"`)
-
-	cmd := exec.Command(`bash`, `-c`, c.String())
+	var args = []string{
+		`build`, `-o`, oname,
+		`-asmflags=-trimpath="` + workDir + `"`,
+		`-gcflags=-trimpath="` + workDir + `"`,
+		`-tags`, p.Tag,
+	}
+	cmd := exec.Command(
+		p.GoVer,
+		append(args, p.Args...)...,
+	)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = cmd.Stdout
@@ -277,7 +274,7 @@ func build(p *param) (err error) {
 			}
 		}
 	}
-	fmt.Println(`开始打包:`, b.String())
+	fmt.Println(`打包文件:`, b.String())
 	zipfile, err := os.Create(filepath.Join(apath, b.String()+`.zip`))
 	if err != nil {
 		return err
