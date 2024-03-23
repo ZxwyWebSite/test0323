@@ -231,27 +231,21 @@ func build(p *param) (err error) {
 	}
 	fmt.Println(`开始编译:`, oname)
 	// 填入参数并构建
-	var c strings.Builder
-	c.WriteString(p.GoVer)
-	c.WriteString(` build -o `)
-	c.WriteString(oname)
-	c.WriteString(` -asmflags=-trimpath="`)
-	c.WriteString(workDir)
-	c.WriteString(`"`)
-	c.WriteString(` -gcflags=-trimpath="`)
-	c.WriteString(workDir)
-	c.WriteString(`"`)
-	c.WriteString(` -tags "`)
-	c.WriteString(p.Tag)
-	c.WriteString(`"`)
-	c.WriteString(` -trimpath -buildvcs=false -ldflags "-s -w -linkmode external"`)
-
-	cmd := exec.Command(`bash`, `-c`, c.String())
+	var args = []string{
+		`build`, `-o`, oname,
+		`-asmflags=-trimpath="` + workDir + `"`,
+		`-gcflags=-trimpath="` + workDir + `"`,
+		`-tags`, p.Tag,
+	}
+	cmd := exec.Command(
+		p.GoVer,
+		append(args, p.Args...)...,
+	)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = cmd.Stdout
 	cmd.Dir = workDir
-	cmd.Env = append(cmd.Env, []string{
+	cmd.Env = append(os.Environ(), []string{
 		`GOOS=` + p.GoOS,
 		`GOARCH=` + p.GoArch,
 		`AR=` + p.AR,
