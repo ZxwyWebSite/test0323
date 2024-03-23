@@ -1,0 +1,9 @@
+bin/
+# cache/
+data/
+.outdated/
+# conf.ini
+test.go
+test_test.go
+# src/sources/builtin/
+rsrc_windows_amd64.syso

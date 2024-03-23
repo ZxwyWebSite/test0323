@@ -1,0 +1,41 @@
+name: Action
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+
+      - name: Set up Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - run: go version
+
+      - name: Install dependencies
+        run: |
+          go install golang.org/dl/go1.20.14@latest && go1.20.14 download
+          sudo apt update
+          sudo apt -y install gcc-mingw-w64-x86-64
+          sudo apt -y install gcc-arm-linux-gnueabihf libc6-dev-armhf-cross
+          sudo apt -y install gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+
+      - name: Fetch zTool
+        run: wget "https://r2eu.zxwy.link/gh/lx-source/statics/ztool-20240323.zip" -O ../ztool.zip && cd ../ && unzip ztool.zip
+
+      - name: Run Action
+        run: go run action.go
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: lx-source-bin
+          path: ./dist
