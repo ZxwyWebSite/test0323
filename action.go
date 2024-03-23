@@ -232,7 +232,8 @@ func build(p *param) (err error) {
 	if p.GoOS == `windows` {
 		oname += `.exe` // dist/lx-source-linux-amd64v2.exe
 	}
-	fmt.Println(`开始编译:`, oname, `, Param:`, *p)
+	fmt.Println(`开始编译:`, oname)
+	fmt.Printf("编译参数: %+v\n", *p)
 	// 填入参数并构建
 	var args = []string{
 		`build`, `-o`, oname,
