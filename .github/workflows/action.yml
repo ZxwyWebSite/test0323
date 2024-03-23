@@ -21,18 +21,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          go version && go install golang.org/dl/go1.20.14@latest && go1.20.14 download && go1.20.14 version
-          sudo apt update
-          sudo apt -y install gcc-mingw-w64-x86-64
-          sudo apt -y install gcc-arm-linux-gnueabihf libc6-dev-armhf-cross
-          sudo apt -y install gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+          go install golang.org/dl/go1.20.14@latest && go1.20.14 download && go1.20.14 version
+          sudo apt-get update
+          sudo apt-get -y install gcc-mingw-w64-x86-64
+          sudo apt-get -y install gcc-arm-linux-gnueabihf libc6-dev-armhf-cross
+          sudo apt-get -y install gcc-aarch64-linux-gnu libc6-dev-arm64-cross
 
-      - name: Fetch zTool
-        run: wget "https://r2eu.zxwy.link/gh/lx-source/statics/ztool-20240323.zip" -O ../ztool.zip && cd ../ && unzip ztool.zip
-        continue-on-error: true
+      # - name: Fetch zTool
+      #   run: wget "https://r2eu.zxwy.link/gh/lx-source/statics/ztool-20240323.zip" -O ../ztool.zip && cd ../ && unzip ztool.zip
+      #   continue-on-error: true
 
       - name: Run Action
         run: go run action.go
+        env:
+          GOROOT: '/home/runner/go'
 
       - name: Upload
         uses: actions/upload-artifact@v4
