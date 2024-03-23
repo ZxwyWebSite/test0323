@@ -6,7 +6,7 @@
 
 package slices
 
-import "cmp"
+import "github.com/ZxwyWebSite/ztool/x/cmp"
 
 // insertionSortOrdered sorts data[a:b] using insertion sort.
 func insertionSortOrdered[E cmp.Ordered](data []E, a, b int) {

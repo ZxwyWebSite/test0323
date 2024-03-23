@@ -5,8 +5,9 @@
 package slices
 
 import (
-	"cmp"
 	"math/bits"
+
+	"github.com/ZxwyWebSite/ztool/x/cmp"
 )
 
 // Sort sorts a slice of any ordered type in ascending order.
