@@ -33,8 +33,6 @@ jobs:
 
       - name: Run Action
         run: go run action.go
-        env:
-          GOMODCACHE: '/home/runner/go/pkg/mod'
 
       - name: Upload
         uses: actions/upload-artifact@v4
