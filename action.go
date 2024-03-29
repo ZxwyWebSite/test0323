@@ -71,7 +71,7 @@ var (
 									Tags: `go_json`,
 								},
 								`v3`: {
-									Tags: `sonic`,
+									Tags: `sonic avx`,
 								},
 							},
 						},
@@ -108,7 +108,7 @@ var (
 									Tags: `go_json`,
 								},
 								`v3`: {
-									Tags: `sonic`,
+									Tags: `sonic avx`,
 								},
 							},
 						},
@@ -140,7 +140,7 @@ var (
 									Tags: `go_json`,
 								},
 								`v3`: {
-									Tags: `sonic`,
+									Tags: `sonic avx`,
 								},
 							},
 						},
