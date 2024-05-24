@@ -19,7 +19,7 @@ const (
 	args_name = `lx-source` // 程序名称
 	args_path = `dist/`     // 输出目录
 	args_zpak = true        // 打包文件
-	args_repo = `repo/`     // 源码目录
+	// args_repo = `repo/`     // 源码目录
 )
 
 var workDir string
@@ -298,7 +298,8 @@ func build(p *param) (err error) {
 	}
 	cmd := exec.Command(
 		p.GoVer,
-		append(append(args, p.Args...), args_repo)...,
+		// append(append(args, p.Args...), args_repo)...,
+		append(args, p.Args...)...,
 	)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout

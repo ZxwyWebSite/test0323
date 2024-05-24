@@ -37,7 +37,7 @@ jobs:
       #   continue-on-error: true
 
       - name: Run Action
-        run: go run repo/action.go
+        run: cd repo && go run action.go && mv dist ../
 
       - name: Short SHA
         uses: benjlevesque/short-sha@v2.2
