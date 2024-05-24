@@ -20,6 +20,7 @@ const (
 	args_path = `dist/`     // 输出目录
 	args_zpak = true        // 打包文件
 	// args_repo = `repo/`     // 源码目录
+	args_home = `/home/runner` // 用户目录
 )
 
 var workDir string
@@ -147,9 +148,9 @@ func main() {
 				`android`: {
 					Arch: list_arch{
 						`amd64`: {
-							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
-							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang`,
-							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang++`,
+							AR:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang`,
+							CXX: args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang++`,
 							Vers: list_vers{
 								``: {
 									Tags: `go_json`,
@@ -157,9 +158,9 @@ func main() {
 							},
 						},
 						`arm64`: {
-							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
-							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang`,
-							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++`,
+							AR:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang`,
+							CXX: args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++`,
 							Vers: list_vers{
 								``: {
 									Tags: `go_json`,
@@ -167,9 +168,9 @@ func main() {
 							},
 						},
 						`386`: {
-							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
-							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang`,
-							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang++`,
+							AR:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang`,
+							CXX: args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang++`,
 							Vers: list_vers{
 								``: {
 									Tags: `go_json`,
@@ -177,9 +178,9 @@ func main() {
 							},
 						},
 						`arm`: {
-							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
-							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang`,
-							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang++`,
+							AR:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang`,
+							CXX: args_home + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang++`,
 							Vers: list_vers{
 								``: {
 									Tags: `go_json`,
@@ -200,7 +201,7 @@ func main() {
 				// },
 			},
 		},
-		`/home/runner/go/bin/go1.20.14`: {
+		args_home + `/go/bin/go1.20.14`: {
 			Args: def_args,
 			GoOS: list_goos{
 				`windows`: {
