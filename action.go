@@ -19,6 +19,7 @@ const (
 	args_name = `lx-source` // 程序名称
 	args_path = `dist/`     // 输出目录
 	args_zpak = true        // 打包文件
+	args_repo = `repo/`     // 源码目录
 )
 
 var workDir string
@@ -29,6 +30,7 @@ func init() {
 		os.Exit(0)
 	}
 	workDir, _ = os.Getwd()
+	fmt.Println(`运行目录:`, workDir)
 }
 
 type (
@@ -50,13 +52,26 @@ type (
 	}
 )
 
-var (
-	// 构建参数
-	def_args = []string{
-		`-trimpath`, `-buildvcs=false`,
-		`-ldflags`, `-s -w -linkmode external`,
-	}
-	def_list = list_conf{
+// 构建参数
+var def_args = []string{
+	`-trimpath`, `-buildvcs=false`,
+	`-ldflags`, `-s -w -linkmode external`,
+}
+
+type param struct {
+	GoVer  string   // 环境 go1.20.14
+	GoOS   string   // 系统 linux
+	GoArch string   // 架构 amd64
+	GoIns  string   // 指令 GOAMD64=v2
+	Args   []string // 参数 ldflags
+	Tag    string   // 标志 go_json
+	AR     string
+	CC     string
+	CXX    string
+}
+
+func main() {
+	var def_list = list_conf{
 		`go`: {
 			Args: def_args,
 			GoOS: list_goos{
@@ -67,10 +82,16 @@ var (
 							CC:  `x86_64-linux-gnu-gcc`,
 							CXX: `x86_64-linux-gnu-g++`,
 							Vers: list_vers{
+								`v1`: {
+									Tags: `go_json`,
+								},
 								`v2`: {
 									Tags: `go_json`,
 								},
 								`v3`: {
+									Tags: `sonic avx`,
+								},
+								`v4`: {
 									Tags: `sonic avx`,
 								},
 							},
@@ -80,6 +101,12 @@ var (
 							CC:  `arm-linux-gnueabihf-gcc`,
 							CXX: `arm-linux-gnueabihf-cpp`,
 							Vers: list_vers{
+								`5`: {
+									Tags: `go_json`,
+								},
+								`6`: {
+									Tags: `go_json`,
+								},
 								`7`: {
 									Tags: `go_json`,
 								},
@@ -110,6 +137,53 @@ var (
 								`v3`: {
 									Tags: `sonic avx`,
 								},
+								`v4`: {
+									Tags: `sonic avx`,
+								},
+							},
+						},
+					},
+				},
+				`android`: {
+					Arch: list_arch{
+						`amd64`: {
+							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang`,
+							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang++`,
+							Vers: list_vers{
+								``: {
+									Tags: `go_json`,
+								},
+							},
+						},
+						`arm64`: {
+							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang`,
+							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++`,
+							Vers: list_vers{
+								``: {
+									Tags: `go_json`,
+								},
+							},
+						},
+						`386`: {
+							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang`,
+							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang++`,
+							Vers: list_vers{
+								``: {
+									Tags: `go_json`,
+								},
+							},
+						},
+						`arm`: {
+							AR:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar`,
+							CC:  workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang`,
+							CXX: workDir + `/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang++`,
+							Vers: list_vers{
+								``: {
+									Tags: `go_json`,
+								},
 							},
 						},
 					},
@@ -136,6 +210,9 @@ var (
 							CC:  `x86_64-w64-mingw32-gcc`,
 							CXX: `x86_64-w64-mingw32-cpp`,
 							Vers: list_vers{
+								`v1`: {
+									Tags: `go_json`,
+								},
 								`v2`: {
 									Tags: `go_json`,
 								},
@@ -149,21 +226,6 @@ var (
 			},
 		},
 	}
-)
-
-type param struct {
-	GoVer  string   // 环境 go1.20.14
-	GoOS   string   // 系统 linux
-	GoArch string   // 架构 amd64
-	GoIns  string   // 指令 GOAMD64=v2
-	Args   []string // 参数 ldflags
-	Tag    string   // 标志 go_json
-	AR     string
-	CC     string
-	CXX    string
-}
-
-func main() {
 	fmt.Printf(`
  ================================
  |  Action 一键编译脚本
@@ -173,16 +235,12 @@ func main() {
  ================================
 `, args_name, args_path, args_zpak)
 	// 解析配置文件
-	var params []*param
 	for goVer, conf_list := range def_list {
 		for goOS, goos_list := range conf_list.GoOS {
 			for goArch, arch_list := range goos_list.Arch {
 				for goIns, vers_list := range arch_list.Vers {
-					// fmt.Printf(
-					// 	"ver: %s, os: %s, arch: %s, ins: %s, tag: %s\n",
-					// 	goVer, goOS, goArch, goIns, vers_list.Tags,
-					// )
-					params = append(params, &param{
+					// 构建程序二进制
+					if err := build(&param{
 						GoVer:  goVer,
 						GoOS:   goOS,
 						GoArch: goArch,
@@ -192,15 +250,11 @@ func main() {
 						AR:     arch_list.AR,
 						CC:     arch_list.CC,
 						CXX:    arch_list.CXX,
-					})
+					}); err != nil {
+						fmt.Println(`err:`, err)
+					}
 				}
 			}
-		}
-	}
-	// 构建程序二进制
-	for _, p := range params {
-		if err := build(p); err != nil {
-			fmt.Println(`err:`, err)
 		}
 	}
 	fmt.Println(`执行结束`)
@@ -224,8 +278,9 @@ func build(p *param) (err error) {
 	b.WriteByte('-')         // lx-source-linux-
 	b.WriteString(p.GoArch)  // lx-source-linux-amd64
 	b.WriteString(p.GoIns)   // lx-source-linux-amd64v2
-	if p.GoVer != `go` {
-		b.WriteString(`-go1.20`) // lx-source-linux-amd64v2-go1.20
+	if biname := filepath.Base(p.GoVer); biname != `go` {
+		b.WriteByte('-')      // lx-source-linux-amd64v2-
+		b.WriteString(biname) // lx-source-linux-amd64v2-go1.20.14
 	}
 	// 拼接输出名称
 	oname := args_path + b.String() // dist/lx-source-linux-amd64v2
@@ -237,13 +292,13 @@ func build(p *param) (err error) {
 	// 填入参数并构建
 	var args = []string{
 		`build`, `-o`, oname,
-		`-asmflags=-trimpath="` + workDir + `"`,
-		`-gcflags=-trimpath="` + workDir + `"`,
+		// `-asmflags=-trimpath="` + workDir + `"`,
+		// `-gcflags=-trimpath="` + workDir + `"`,
 		`-tags`, p.Tag,
 	}
 	cmd := exec.Command(
 		p.GoVer,
-		append(args, p.Args...)...,
+		append(append(args, p.Args...), args_repo)...,
 	)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
